@@ -75,7 +75,7 @@ A full-featured e-commerce platform built with the MERN stack (MongoDB, Express.
 1. Clone the repository
 
 ```bash
-git https://github.com/iakshayrathee/CartEngine-MERN.git
+git clone https://github.com/iakshayrathee/CartEngine-MERN.git
 ```
 
 2. Install dependencies for both frontend and backend
