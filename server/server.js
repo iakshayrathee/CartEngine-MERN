@@ -15,16 +15,11 @@ const shopSearchRouter = require("./routes/shop/search-routes");
 const shopReviewRouter = require("./routes/shop/review-routes");
 
 const commonFeatureRouter = require("./routes/common/feature-routes");
-
-
-mongoose
-  .connect(process.env.MONGO_URL)
-  .then(() => console.log("MongoDB connected"))
-  .catch((error) => console.log(error));
+const connectDB = require("./config/db");
 
 const app = express();
 const PORT = process.env.PORT || 5000;
-
+connectDB();
 app.use(
   cors({
     origin: ["http://localhost:5173", "https://cart-engine-mern.vercel.app"],
