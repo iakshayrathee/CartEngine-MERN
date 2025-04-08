@@ -105,8 +105,13 @@ function ProductImageUpload({
       }, 300);
 
       const response = await axios.post(
-        "http://localhost:5000/api/admin/products/upload-image",
-        data
+        `${import.meta.env.VITE_API_BASE_URL}admin/products/upload-image`,
+        data,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
       );
 
       clearInterval(progressInterval);
