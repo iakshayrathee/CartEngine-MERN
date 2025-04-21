@@ -1,28 +1,18 @@
 import { Navigate, useLocation } from "react-router-dom";
 import { useState, useEffect } from "react";
-import { Progress } from "@/components/ui/progress";
+import LoadingScreen from "./loading-screen";
 
 function CheckAuth({ isAuthenticated, user, children }) {
-  const [isLoading, setIsLoading] = useState(true);
-  const [progress, setProgress] = useState(0);
+  const location = useLocation();
+  const [isNavigating, setIsNavigating] = useState(true);
 
   useEffect(() => {
-    let progressInterval;
-    if (isLoading) {
-      progressInterval = setInterval(() => {
-        setProgress((prev) => {
-          const newProgress = prev + 10;
-          if (newProgress >= 100) {
-            setIsLoading(false);
-            return 100;
-          }
-          return newProgress;
-        });
-      }, 100);
-    }
-    return () => clearInterval(progressInterval);
-  }, [isLoading]);
-  const location = useLocation();
+    // Set navigating to false after a short delay to show loading screen
+    const timer = setTimeout(() => {
+      setIsNavigating(false);
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [location.pathname]);
 
   if (location.pathname === "/") {
     if (!isAuthenticated) {
@@ -74,17 +64,9 @@ function CheckAuth({ isAuthenticated, user, children }) {
     return <Navigate to="/admin/dashboard" />;
   }
 
-  if (isLoading) {
-    return (
-      <div className="fixed inset-0 flex flex-col items-center justify-center bg-background/80 backdrop-blur-sm">
-        <div className="w-[300px] space-y-4">
-          <Progress value={progress} className="h-2" />
-          <p className="text-center text-sm text-muted-foreground">
-            {progress < 100 ? "Authenticating..." : "Redirecting..."}
-          </p>
-        </div>
-      </div>
-    );
+  // Show loading screen while navigating
+  if (isNavigating) {
+    return <LoadingScreen />;
   }
 
   return <>{children}</>;

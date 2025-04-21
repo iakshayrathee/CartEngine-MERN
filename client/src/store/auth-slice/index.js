@@ -58,19 +58,33 @@ export const logoutUser = createAsyncThunk(
 export const checkAuth = createAsyncThunk(
   "/auth/checkauth",
 
-  async () => {
-    const response = await axios.get(
-      `${import.meta.env.VITE_API_BASE_URL}auth/check-auth`,
-      {
-        withCredentials: true,
-        headers: {
-          "Cache-Control":
-            "no-store, no-cache, must-revalidate, proxy-revalidate",
-        },
+  async (_, { rejectWithValue }) => {
+    try {
+      // Set a timeout to prevent hanging requests
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout
+      
+      const response = await axios.get(
+        `${import.meta.env.VITE_API_BASE_URL}auth/check-auth`,
+        {
+          withCredentials: true,
+          signal: controller.signal,
+          headers: {
+            "Cache-Control": "max-age=60", // Allow some caching to improve performance
+          },
+        }
+      );
+      
+      clearTimeout(timeoutId);
+      return response.data;
+    } catch (error) {
+      if (error.name === 'AbortError') {
+        console.log('Request timed out');
+        // Return a default response instead of failing completely
+        return rejectWithValue({ success: false, message: 'Authentication check timed out' });
       }
-    );
-
-    return response.data;
+      return rejectWithValue(error.response?.data || { success: false, message: error.message });
+    }
   }
 );
 
