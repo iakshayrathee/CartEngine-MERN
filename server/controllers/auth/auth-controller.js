@@ -96,17 +96,46 @@ const logoutUser = (req, res) => {
   });
 };
 
+// Token verification cache using Map
+const tokenCache = new Map();
+
+// Cache cleanup interval (5 minutes)
+setInterval(() => {
+  const now = Date.now();
+  for (const [key, value] of tokenCache.entries()) {
+    if (now > value.expiresAt) {
+      tokenCache.delete(key);
+    }
+  }
+}, 5 * 60 * 1000);
+
 //auth middleware
 const authMiddleware = async (req, res, next) => {
   const token = req.cookies.token;
-  if (!token)
+  if (!token) {
     return res.status(401).json({
       success: false,
       message: "Unauthorised user!",
     });
+  }
 
   try {
+    // Check cache first
+    const cachedUser = tokenCache.get(token);
+    if (cachedUser && Date.now() < cachedUser.expiresAt) {
+      req.user = cachedUser.user;
+      return next();
+    }
+
+    // Verify token and cache result
     const decoded = jwt.verify(token, "CLIENT_SECRET_KEY");
+
+    // Cache the verified token with 5 minute expiry
+    tokenCache.set(token, {
+      user: decoded,
+      expiresAt: Date.now() + 5 * 60 * 1000,
+    });
+
     req.user = decoded;
     next();
   } catch (error) {
