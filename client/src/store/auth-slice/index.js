@@ -62,7 +62,7 @@ export const checkAuth = createAsyncThunk(
     try {
       // Set a timeout to prevent hanging requests
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 2000); // 2 second timeout
+      const timeoutId = setTimeout(() => controller.abort(), 1000); // 1 second timeout
       
       const response = await axios.get(
         `${import.meta.env.VITE_API_BASE_URL}auth/check-auth`,
