@@ -1,14 +1,15 @@
-# 🛍️ CartEngine MERN E-Commerce Platform
+# 🛍️ CartEngine - MERN E-Commerce Platform
 
 [![Node.js Version](https://img.shields.io/badge/node-%3E%3D%2016.0.0-brightgreen.svg)](https://nodejs.org/)
-[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![License](https://img.shields.io/badge/license-ISC-blue.svg)](LICENSE)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
+
+A full-featured e-commerce platform built with the MERN stack (MongoDB, Express.js, React.js, Node.js) that provides a seamless shopping experience with features like product browsing, cart management, order processing, and user authentication.
 
 ## Table of Contents
 
 - [Overview](#overview)
 - [Features](#features)
-- [Screenshots](#screenshots)
 - [Technology Stack](#technology-stack)
 - [Getting Started](#getting-started)
   - [Prerequisites](#prerequisites)
@@ -43,11 +44,11 @@ A full-featured e-commerce platform built with the MERN stack (MongoDB, Express.
 ## Technology Stack
 
 ### Frontend
-
-- React.js with Vite
-- Redux for state management
-- Tailwind CSS for styling
-- Axios for API requests
+- **React.js** - Frontend library
+- **Redux Toolkit** - State management
+- **Tailwind CSS** - Styling
+- **React Router** - Client-side routing
+- **Axios** - HTTP client
 
 ### Backend
 
@@ -134,12 +135,156 @@ mern-ecommerce/
 
 ## API Documentation
 
-The API endpoints are organized into the following categories:
+### Authentication
 
-- Auth: `/api/auth/*` - User authentication and authorization
-- Products: `/api/products/*` - Product management
-- Orders: `/api/orders/*` - Order processing
-- Users: `/api/users/*` - User management
+#### Register User
+- **Endpoint:** `POST /api/auth/register`
+- **Description:** Register a new user
+- **Request Body:**
+  ```json
+  {
+    "name": "John Doe",
+    "email": "john@example.com",
+    "password": "securepassword123"
+  }
+  ```
+- **Response:**
+  ```json
+  {
+    "token": "jwt.token.here",
+    "user": {
+      "id": "user_id",
+      "name": "John Doe",
+      "email": "john@example.com",
+      "role": "user"
+    }
+  }
+  ```
+
+#### Login User
+- **Endpoint:** `POST /api/auth/login`
+- **Description:** Authenticate user and get JWT token
+- **Request Body:**
+  ```json
+  {
+    "email": "john@example.com",
+    "password": "securepassword123"
+  }
+  ```
+- **Response:** Same as register response
+
+### Products
+
+#### Get All Products
+- **Endpoint:** `GET /api/products`
+- **Description:** Retrieve all products with pagination and filtering
+- **Query Parameters:**
+  - `page` - Page number (default: 1)
+  - `limit` - Items per page (default: 10)
+  - `category` - Filter by category
+  - `sort` - Sort by field (price, -price, name, -name)
+- **Response:**
+  ```json
+  {
+    "products": [
+      {
+        "_id": "product_id",
+        "name": "Product Name",
+        "price": 99.99,
+        "description": "Product description",
+        "images": ["image_url1", "image_url2"],
+        "category": "Electronics",
+        "stock": 50,
+        "rating": 4.5
+      }
+    ],
+    "totalPages": 5,
+    "currentPage": 1
+  }
+  ```
+
+### Cart
+
+#### Add to Cart
+- **Endpoint:** `POST /api/cart`
+- **Authentication:** Required (JWT token)
+- **Description:** Add a product to the user's cart
+- **Request Body:**
+  ```json
+  {
+    "productId": "product_id",
+    "quantity": 1
+  }
+  ```
+- **Response:**
+  ```json
+  {
+    "message": "Product added to cart",
+    "cart": {
+      "items": [
+        {
+          "product": "product_id",
+          "quantity": 1,
+          "price": 99.99
+        }
+      ],
+      "total": 99.99
+    }
+  }
+  ```
+
+### Orders
+
+#### Create Order
+- **Endpoint:** `POST /api/orders`
+- **Authentication:** Required (JWT token)
+- **Description:** Create a new order from cart items
+- **Request Body:**
+  ```json
+  {
+    "shippingAddress": {
+      "address": "123 Main St",
+      "city": "New York",
+      "postalCode": "10001",
+      "country": "USA"
+    },
+    "paymentMethod": "paypal"
+  }
+  ```
+- **Response:**
+  ```json
+  {
+    "_id": "order_id",
+    "user": "user_id",
+    "orderItems": [
+      {
+        "product": "product_id",
+        "name": "Product Name",
+        "quantity": 1,
+        "price": 99.99
+      }
+    ],
+    "shippingAddress": {
+      "address": "123 Main St",
+      "city": "New York",
+      "postalCode": "10001",
+      "country": "USA"
+    },
+    "paymentMethod": "paypal",
+    "paymentResult": {
+      "id": "paypal_payment_id",
+      "status": "COMPLETED",
+      "update_time": "2025-07-28T12:00:00Z"
+    },
+    "itemsPrice": 99.99,
+    "taxPrice": 8.00,
+    "shippingPrice": 10.00,
+    "totalPrice": 117.99,
+    "isPaid": true,
+    "isDelivered": false,
+    "createdAt": "2025-07-28T12:00:00Z"
+  }
+  ```
 
 ## Contributing
 
